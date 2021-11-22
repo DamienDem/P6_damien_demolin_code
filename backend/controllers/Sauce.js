@@ -82,39 +82,36 @@ exports.getAllSauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-  switch( req.body.like ){
+  Sauce.findOne({ _id: req.params.id })
+        .then( sauce => {
+  switch( req.body.like){
     case 1:
-      Sauce.updateOne({ _id: req.params.id }, { $push: { usersLiked: req.body.userId }, $inc: { likes: +1 }})
-      .then(() => res.status(200).json({ message: 'Like !'}))
-      .catch(error => res.status(400).json({ error }));
+      sauce.usersLiked.push(req.body.userId);
+      sauce.likes++;
       console.log('like');
-      break;
+    break;
     case -1:
-      Sauce.updateOne({ _id: req.params.id }, { $push: { usersDisliked: req.body.userId }, $inc: { dislikes: +1 }})
-      .then(() => res.status(200).json({ message: 'Dislike !'}))
-      .catch(error => res.status(400).json({ error }));
+      sauce.usersDisliked.push(req.body.userId);
+      sauce.dislikes++;
       console.log('dislike');
-      break;
+    break;
     case 0:
-      Sauce.findOne({ _id: req.params.id })
-    .then((sauce =>
-      {
-      if(sauce.usersLiked.includes(req.body.userId))  
-      {
-        Sauce.updateOne({ _id: req.params.id}, { $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 }})
-        .then(() => res.status(200).json({ message: 'Remove Like !'}))
-        .catch((error) => res.status(400).json({ error }))
+      if(sauce.usersLiked.includes(req.body.userId)) {
+        sauce.usersLiked.pull(req.body.userId);
+        sauce.likes--;    
       }
-      if(sauce.usersDisliked.includes(req.body.userId))
-      {
-        Sauce.updateOne({_id: req.params.id}, { $pull: { usersdisLiked: req.body.userId }, $inc : {dislikes: -1}})
-        .then(() => res.status(200).json({ message: 'Remove Dislike !'}))
-        .catch((error) => res.status(400).json({ error }))
+      if(sauce.usersDisliked.includes(req.body.userId)) {
+        sauce.usersDisliked.pull(req.body.userId);
+        sauce.dislikes--;     
       }
-    }))
-    .catch((error) => res.status(404).json({ error }))
-      break;
+    break;
     default:
-      console.log(error);
+      console.log('poukoi');
   }
+  sauce.save()
+  .then(() => res.status(200).json({ message: 'choice saved'}))
+  .catch(error => res.status(400).json({ error }));
+
+})
+.catch(error => res.status(400).json({error}));
 };
