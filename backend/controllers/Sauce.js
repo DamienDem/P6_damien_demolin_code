@@ -82,36 +82,34 @@ exports.getAllSauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
+  let userId = req.body.userId
   Sauce.findOne({ _id: req.params.id })
         .then( sauce => {
-  switch( req.body.like){
+  switch(req.body.like){
     case 1:
-      sauce.usersLiked.push(req.body.userId);
+      sauce.usersLiked.push(userId);
       sauce.likes++;
-      console.log('like');
     break;
     case -1:
-      sauce.usersDisliked.push(req.body.userId);
+      sauce.usersDisliked.push(userId);
       sauce.dislikes++;
-      console.log('dislike');
     break;
     case 0:
-      if(sauce.usersLiked.includes(req.body.userId)) {
-        sauce.usersLiked.pull(req.body.userId);
+      if(sauce.usersLiked.includes(userId)) {
+        sauce.usersLiked.pull(userId);
         sauce.likes--;    
       }
-      if(sauce.usersDisliked.includes(req.body.userId)) {
-        sauce.usersDisliked.pull(req.body.userId);
+      if(sauce.usersDisliked.includes(userId)) {
+        sauce.usersDisliked.pull(userId);
         sauce.dislikes--;     
       }
     break;
     default:
-      console.log('poukoi');
+      console.log('default');
   }
   sauce.save()
   .then(() => res.status(200).json({ message: 'choice saved'}))
   .catch(error => res.status(400).json({ error }));
-
 })
 .catch(error => res.status(400).json({error}));
 };
