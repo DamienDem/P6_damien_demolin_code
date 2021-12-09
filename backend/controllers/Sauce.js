@@ -1,5 +1,6 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+require('dotenv').config();
 
 exports.addSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
