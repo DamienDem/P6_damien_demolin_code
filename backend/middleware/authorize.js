@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const mongooseErrors = require('mongoose-errors');
 
 module.exports = (req, res, next) => {
   try {
@@ -12,8 +13,10 @@ module.exports = (req, res, next) => {
       next();
     }
   } catch {
-    res.status(401).json({
-      error: new Error('Invalid request!')
-    });
+    mongooseErrors(
+      res.status(401).json({
+        error: error
+      })
+    )
   }
 };

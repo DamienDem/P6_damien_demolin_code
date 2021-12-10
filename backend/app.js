@@ -12,7 +12,7 @@ mongoose.connect('mongodb+srv://'+ process.env.DB_LOGIN +'@cluster0.up8fp.mongod
 { useNewUrlParser: true,
   useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  .catch((err) => console.log('Connexion à MongoDB échouée !'+ err));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
